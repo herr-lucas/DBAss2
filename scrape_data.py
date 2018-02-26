@@ -11,21 +11,23 @@ with open("student_names.txt", "w+") as f:
 	json.dump(student_names, f)
 
 def generate_email(name):
-	return name + "@gmail.com"
+	return name.replace(" ", "_") + "@gmail.com"
 
 def generate_credit_card_number():
-	return random(10**18, 10**19-1)
+	return 10**18 + random.random() * (10**19 - 10**18) - 1
 
-def generate_billing_address
+def generate_billing_address():
 	streets = ["Walkey", "Wolseley", "Gray Inn", "Peel", "Aylmer"]
-	address = random(5000) + " " + random.choice(streets)
+	address = "%d %s" % (int(random.random()*5000), random.choice(streets))
 	return address
 
 def generate_insert_queries(names):
-	with fopen("insert_queries", "w+") as f:
+	with open("insert_queries.sql", "w+") as f:
 		for name in names:
 			email = generate_email(name)
 			billing_adddress = generate_billing_address()
 			credit_card_number = generate_credit_card_number()
-			query = "INSERT INTO Visitor (name, email, billing_adddress, credit_card_number) %s %s %s %d" % (name, email, billing_adddress, credit_card_number)
+			query = "INSERT INTO Visitor (name, email, billing_adddress, credit_card_number) %s %s %s %d\n" % (name, email, billing_adddress, credit_card_number)
 			f.write(query)
+
+generate_insert_queries(student_names)
