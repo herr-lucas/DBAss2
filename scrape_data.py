@@ -76,6 +76,12 @@ def generate_insert_queries_staff(student_names):
 			query = "INSERT INTO Staff (Name, Email, Role) %s %s %s\n" % (name, email, role)
 			f.write(query)
 
+def generate_insert_queries_events(student_names, events):
+	num_performers = num_events * 3
+	for student_names[:-50]
+
+events = [{"January 5th"}, {"January 6th"}, {"January 7th"}]
 generate_insert_queries_visitors(student_names)
 generate_insert_queries_tickets(student_names)
 generate_insert_queries_staff(student_names)
+generate_insert_queries_events()
