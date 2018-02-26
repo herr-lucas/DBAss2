@@ -70,18 +70,47 @@ def generate_insert_queries_staff(student_names):
 	num_staff = 50
 	staff_roles = ["cleaner", "sales", "security", "ticketing", "food"]
 	with open("insert_queries_staff.sql", "w+") as f:
-		for name in student_names[-num_staff:]
+		for name in student_names[-num_staff:]:
 			email = generate_email(name)
 			role = random.choice(staff_roles)
 			query = "INSERT INTO Staff (Name, Email, Role) %s %s %s\n" % (name, email, role)
 			f.write(query)
 
-def generate_insert_queries_events(student_names, events):
-	num_performers = num_events * 3
-	for student_names[:-50]
+#def generate_insert_queries_events(student_names, events):
+#	num_performers = num_events * 3
+#	for student_names[:-50]
+
+def generate_insert_queries_sponsors(sponsors):
+	def generate_amount():
+		return random.choice([0, 1000, 5000, 10000])
+
+	with open("insert_queries_sponsors.sql", "w+") as f:
+		for sponsor in sponsors:
+			email = generate_email(sponsor)
+			query = "INSERT INTO Sponsor (email, sponsor, generate_amount) %s %s %s\n" % (email, sponsor, generate_amount())
+			f.write(query)
+
+def generate_insert_queries_equipment():
+	eqs = [('speakers', 10000, 2), ('screens', 20000, 3)]
+	with open("insert_queries_equipment.sql") as f:
+		for (name, price, qty) in eqs:
+			query = "INSERT INTO Equipment (name, price, quantity) %s %d %d\n" % (name, price, quantity)
+			f.write(query)
+
+def generate_insert_queries_booth(sponsors):
+	types = [('hats', 'non-food'), ('games', 'non-food'), ('heated area', 'non-food'),('snacks','food'), ('drinks', 'food')]
+	locations = [a + str(b) + str(c) for a in ['A', 'B', 'C'] for b in range(1,4) for c in range(1, 4)]
+	with open("insert_queries_booths.sql") as f:
+		for (i, (name, typ)) in types.zipWithIndex:
+			query = "INSERT INTO Booth (Name, Location, Type) %s %s %s\n"  % (name, locations[i], typ)
+			f.write(query)
 
 events = [{"January 5th"}, {"January 6th"}, {"January 7th"}]
+sponsors = ['Videotron', 'Sapporo', 'Solotech', 'RBC', 'STM']
+
 generate_insert_queries_visitors(student_names)
 generate_insert_queries_tickets(student_names)
 generate_insert_queries_staff(student_names)
-generate_insert_queries_events()
+generate_insert_queries_booth(sponsors)
+#generate_insert_queries_events()
+generate_insert_queries_sponsors(sponsors)
