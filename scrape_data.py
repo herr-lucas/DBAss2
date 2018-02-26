@@ -11,10 +11,10 @@ with open("student_names.txt", "w+") as f:
 	json.dump(student_names, f)
 
 def generateOptional(generator):
-	if random() > 0.5:
-		return generator()
-	else 
-		return lambda x: None
+	if random.random() > 0.5:
+		return generator
+	else:
+		return lambda *x: "NULL"
 
 def generate_email(name):
 	return name.replace(" ", "_") + "@gmail.com"
@@ -38,30 +38,33 @@ def generate_insert_queries_visitors(names):
 
 def generate_insert_queries_tickets(visitors):
 	def generate_dates():
-		day = int(random()*30)
-		month = random.choice["December", "January"]
-		purchase_day = if month == "January" int(random()*day) else int(random()*30)
-		return {"event_day": "January " + day + "th", "purchase_day": month + " " + purchase_day}
+		day = int(random.random()*30)
+		month = random.choice(["December", "January"])
+		purchase_day = int(random.random()*day) if month == "January" else int(random.random()*30)
+		return {"event_day": "January %sth" % day, "purchase_day": month + " %sth" % purchase_day}
 
 	def generate_price(ticket_type):
-		return if ticket_type == "VIP" return 80 else 40
+		return str(80 if ticket_type == "VIP" else 40)
 
 	def sample_visitor_email(visitors):
-		return generate_email(visitors.choice())
+		return generate_email(random.choice(visitors))
 
 	ticket_types = ['VIP', 'Regular']
 	num_tickets = 500
 
 	with open("insert_queries_tickets.sql", "w+") as f:
 		for ticket_num in range(1, num_tickets):
-			ticket_type = int(random.choice(ticket_type))
+			ticket_type = random.choice(ticket_types)
 			dates = generateOptional(generate_dates)()
+			event_day = dates["event_day"] if dates != "NULL" else "NULL"
+			purchase_day = dates["purchase_day"] if dates != "NULL" else "NULL"
 			price = generateOptional(generate_price)(ticket_type)
 			visitor_email = generateOptional(sample_visitor_email)(visitors)
 			query = """INSERT INTO Ticket (TicketNO, Date_of_entry, Ticket_type, Date_of_purchase, Price, 
-					Visitor_email) %d %s %s %s %d %s""" % (ticket_num, dates[event_day], 
-					ticket_type, dates[purchase_day] price, visitor_email)
-
+				Visitor_email) %d %s %s %s %s %s\n""" % (
+				ticket_num, event_day, ticket_type, purchase_day, price, visitor_email
+			)
+			f.write(query)
 
 generate_insert_queries_visitors(student_names)
 generate_insert_queries_tickets(student_names)
