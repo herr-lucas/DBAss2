@@ -66,5 +66,16 @@ def generate_insert_queries_tickets(visitors):
 			)
 			f.write(query)
 
+def generate_insert_queries_staff(student_names):
+	num_staff = 50
+	staff_roles = ["cleaner", "sales", "security", "ticketing", "food"]
+	with open("insert_queries_staff.sql", "w+") as f:
+		for name in student_names[-num_staff:]
+			email = generate_email(name)
+			role = random.choice(staff_roles)
+			query = "INSERT INTO Staff (Name, Email, Role) %s %s %s\n" % (name, email, role)
+			f.write(query)
+
 generate_insert_queries_visitors(student_names)
 generate_insert_queries_tickets(student_names)
+generate_insert_queries_staff(student_names)
