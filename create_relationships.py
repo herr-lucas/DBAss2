@@ -38,8 +38,8 @@ def generate_insert_queries_sells(booths, merchandise):
 			query = "INSERT INTO Sells (Booth_name, MerchandiseID, quantity) %s %s\n" % (booth, merch, qty)
 			f.write(query)
 
-def create_relationship_queries():
-	generate_insert_queries_visits()
+def create_relationship_queries(entity_data):
+	generate_insert_queries_visits(entity_data["visitors_and_events"])
 	generate_insert_queries_performs()
 	generate_insert_queries_work()
 	generate_insert_queries_borrow()

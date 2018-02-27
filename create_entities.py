@@ -70,13 +70,21 @@ def generate_insert_queries_staff(student_names):
 			query = "INSERT INTO Staff (Name, Email, Role) %s %s %s\n" % (name, email, role)
 			f.write(query)
 
-def generate_insert_queries_events(events_and_dates):
+def generate_insert_queries_events():
+	events_and_dates = [	
+		{"date": "January 5th", "name": "Kaytranada"}, 
+		{"date": "January 6th", "name": "Bonobo"}, 
+		{"date": "January 7th", "name": "Petit Biscuit"}
+	]
 	with open("insert_queries_events", "w+") as f:
-		for (name, date) in events_and_dates
+		for e in events_and_dates:
+			date = e["date"]
+			name = e["name"]
 			query = "INSERT INTO Event (Date, Name) %s %s\n" % (date, name)
 			f.write(query)
 
 def generate_insert_queries_sponsors(sponsors):
+
 	def generate_amount():
 		return random.choice([0, 1000, 5000, 10000])
 
@@ -88,7 +96,7 @@ def generate_insert_queries_sponsors(sponsors):
 
 def generate_insert_queries_equipment():
 	eqs = [('speakers', 10000, 2), ('screens', 20000, 3)]
-	equipments = []
+	equipment = []
 	with open("insert_queries_equipment.sql", "w+") as f:
 		for (name, price, qty) in eqs:
 			query = "INSERT INTO Equipment (name, price, quantity) %s %d %d\n" % (name, price, qty)
@@ -103,6 +111,24 @@ def generate_insert_queries_booth(sponsors):
 		for (i, (name, typ)) in map(lambda x: (types.index(x), x), types):
 			query = "INSERT INTO Booth (Name, Location, Type) %s %s %s\n"  % (name, locations[i], typ)
 			f.write(query)
+
+def generate_insert_queries_merchandise():
+	merch = {
+	  "hats": ["red hat", "orange hat", "blue hat", "baseball cap"],
+	  "games": ["pinball", "cards", "snowball toss"],
+	  "heated area": ["souveniers"],
+	  "snacks": ["ham sandwich", "turkey sandwich", "crackers and cheese"],
+	  "drinks": ["voda", "rum", "jack daniels", "orange juice", "water"]
+	}
+	sponsor = "Videotron"
+	sponsor_email = generate_email(sponsor)
+	with open("insert_queries_merchandise.sql", "w+") as f:
+		for merchitems in merch.values():
+			for name in merchitems:
+				stock = random.choice([10, 50]) 
+				price = random.choice([3, 5, 10, 20, 30])	
+				query = "INSERT INTO Merchandise (Name, Stock, Price_per_unit, sponsor_email) %s %d %s% s\n" % (name, stock, price, sponsor_email)
+				f.write(query)
 
 def generate_insert_queries_performers():
 	performances = [
@@ -127,20 +153,21 @@ def generate_insert_queries_performers():
 			emails_and_dates.append((email, day))
 	return emails_and_dates
 
-def create_entity_queries():
-	generate_insert_queries_visitors(student_names)
-	visitors_and_tickets = generate_insert_queries_tickets(student_names)
-	generate_insert_queries_staff(student_names)
+def create_entity_queries(names, sponsors):
+	visitor_names = names[len(names)/5:]
+	staff_names = names[:len(names)/5]
+	generate_insert_queries_visitors(visitor_names)
+	visitors_and_tickets = generate_insert_queries_tickets(visitor_names)
+	generate_insert_queries_staff(staff_names)
 	generate_insert_queries_events()
 	performer_emails_and_dates = generate_insert_queries_performers()
 	generate_insert_queries_sponsors(sponsors)
 	eqIDs = generate_insert_queries_equipment()
 	generate_insert_queries_booth(sponsors)
 	generate_insert_queries_merchandise()
-	generate_insert_queries
 	return {
 		"visitor_tickets": visitors_and_tickets,
 		"performers_and_events": performer_emails_and_dates,
-		"equipment_ids": eqIDs,
-		"booths_and_merch": booths_and_merch
+		"equipment_ids": eqIDs#,
+		#"booths_and_merch": booths_and_merch
 	}

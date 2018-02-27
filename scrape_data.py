@@ -1,5 +1,6 @@
 import urllib, json, random
-import create_relationships, create_entities
+from create_relationships import create_relationship_queries
+from create_entities import create_entity_queries
 
 def getNames():
 	try:
@@ -18,13 +19,7 @@ def getNames():
 		return student_names
 
 names = getNames()
-
-events = [	
-	{"date": "January 5th", "Kaytranada"}, 
-	{"date": "January 6th", "name": "Bonobo"}, 
-	{"date": "January 7th", "name": "Petit Biscuit"}
-]
 sponsors = ['Videotron', 'Sapporo', 'Solotech', 'RBC', 'STM']
 
-create_entity_queries()
-create_relationship_queries()
+entitydata = create_entity_queries(names, sponsors)
+create_relationship_queries(entitydata)
