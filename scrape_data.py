@@ -92,25 +92,37 @@ def generate_insert_queries_sponsors(sponsors):
 
 def generate_insert_queries_equipment():
 	eqs = [('speakers', 10000, 2), ('screens', 20000, 3)]
-	with open("insert_queries_equipment.sql") as f:
+	with open("insert_queries_equipment.sql", "w+") as f:
 		for (name, price, qty) in eqs:
-			query = "INSERT INTO Equipment (name, price, quantity) %s %d %d\n" % (name, price, quantity)
+			query = "INSERT INTO Equipment (name, price, quantity) %s %d %d\n" % (name, price, qty)
 			f.write(query)
 
 def generate_insert_queries_booth(sponsors):
 	types = [('hats', 'non-food'), ('games', 'non-food'), ('heated area', 'non-food'),('snacks','food'), ('drinks', 'food')]
 	locations = [a + str(b) + str(c) for a in ['A', 'B', 'C'] for b in range(1,4) for c in range(1, 4)]
-	with open("insert_queries_booths.sql") as f:
-		for (i, (name, typ)) in types.zipWithIndex:
+	with open("insert_queries_booths.sql", "w+") as f:
+		for (i, (name, typ)) in map(lambda x: (types.index(x), x), types):
 			query = "INSERT INTO Booth (Name, Location, Type) %s %s %s\n"  % (name, locations[i], typ)
 			f.write(query)
 
 events = [{"January 5th"}, {"January 6th"}, {"January 7th"}]
 sponsors = ['Videotron', 'Sapporo', 'Solotech', 'RBC', 'STM']
 
+#entities
 generate_insert_queries_visitors(student_names)
 generate_insert_queries_tickets(student_names)
 generate_insert_queries_staff(student_names)
-generate_insert_queries_booth(sponsors)
 #generate_insert_queries_events()
+generate_insert_queries_performer()
 generate_insert_queries_sponsors(sponsors)
+generate_insert_queries_equipment()
+generate_insert_queries_booth(sponsors)
+generate_insert_queries_merchandise()
+generate_insert_queries
+
+#relationships
+generate_insert_queries_visits()
+generate_insert_queries_performs()
+generate_insert_queries_work()
+generate_insert_queries_borrow()
+generate_insert_queries_sells()
