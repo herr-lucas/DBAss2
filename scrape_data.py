@@ -19,7 +19,11 @@ def getNames():
 
 names = getNames()
 
-events = [{"January 5th"}, {"January 6th"}, {"January 7th"}]
+events = [	
+	{"date": "January 5th", "Kaytranada"}, 
+	{"date": "January 6th", "name": "Bonobo"}, 
+	{"date": "January 7th", "name": "Petit Biscuit"}
+]
 sponsors = ['Videotron', 'Sapporo', 'Solotech', 'RBC', 'STM']
 
 create_entity_queries()

@@ -42,6 +42,7 @@ def generate_insert_queries_tickets(visitors):
 	ticket_types = ['VIP', 'Regular']
 	num_tickets = 500
 
+	visitors_and_tickets = []
 	with open("insert_queries_tickets.sql", "w+") as f:
 		for ticket_num in range(1, num_tickets):
 			ticket_type = random.choice(ticket_types)
@@ -55,6 +56,9 @@ def generate_insert_queries_tickets(visitors):
 				ticket_num, event_day, ticket_type, purchase_day, price, visitor_email
 			)
 			f.write(query)
+			visitors_and_tickets.append({"email": visitor_email, "date": event_day})
+
+	return visitors_and_tickets
 
 def generate_insert_queries_staff(student_names):
 	num_staff = 50
@@ -66,9 +70,11 @@ def generate_insert_queries_staff(student_names):
 			query = "INSERT INTO Staff (Name, Email, Role) %s %s %s\n" % (name, email, role)
 			f.write(query)
 
-#def generate_insert_queries_events(student_names, events):
-#	num_performers = num_events * 3
-#	for student_names[:-50]
+def generate_insert_queries_events(events_and_dates):
+	with open("insert_queries_events", "w+") as f:
+		for (name, date) in events_and_dates
+			query = "INSERT INTO Event (Date, Name) %s %s\n" % (date, name)
+			f.write(query)
 
 def generate_insert_queries_sponsors(sponsors):
 	def generate_amount():
@@ -82,10 +88,13 @@ def generate_insert_queries_sponsors(sponsors):
 
 def generate_insert_queries_equipment():
 	eqs = [('speakers', 10000, 2), ('screens', 20000, 3)]
+	equipments = []
 	with open("insert_queries_equipment.sql", "w+") as f:
 		for (name, price, qty) in eqs:
 			query = "INSERT INTO Equipment (name, price, quantity) %s %d %d\n" % (name, price, qty)
 			f.write(query)
+			equipment.append(name)
+	return equipment
 
 def generate_insert_queries_booth(sponsors):
 	types = [('hats', 'non-food'), ('games', 'non-food'), ('heated area', 'non-food'),('snacks','food'), ('drinks', 'food')]
@@ -95,14 +104,43 @@ def generate_insert_queries_booth(sponsors):
 			query = "INSERT INTO Booth (Name, Location, Type) %s %s %s\n"  % (name, locations[i], typ)
 			f.write(query)
 
+def generate_insert_queries_performers():
+	performances = [
+		{"day": "January 1st", "performers": ["Hack", "Slack", "Kaytranada"]}, 
+		{"day": "January 2nd", "performers": ["Slice", "Dice", "Bonobo"]}, 
+		{"day": "January 3rd", "performers": ["Mash", "Petit Biscuit"]}
+	]
+	default_genre = "Electronic"
+	emails_and_dates = []
+	with open("insert_queries_performers.sql", "w+") as f:
+		for p in performances:
+			day = p["day"]
+			performers = p["performers"]
+			for performer in performers:
+				email = generate_email(performer)
+				name = performer
+				genre = default_genre
+				pay = random.choice([500, 1000, 10000, 50000])
+				intro = "insert intro here"
+				query = "INSERT INTO Performer (Email, Name, Genre, Pay, Intro) %s %s %s %d %s" % (email, name, genre, pay, intro)
+				f.write(query)
+			emails_and_dates.append((email, day))
+	return emails_and_dates
+
 def create_entity_queries():
 	generate_insert_queries_visitors(student_names)
-	generate_insert_queries_tickets(student_names)
+	visitors_and_tickets = generate_insert_queries_tickets(student_names)
 	generate_insert_queries_staff(student_names)
-	#generate_insert_queries_events()
-	generate_insert_queries_performer()
+	generate_insert_queries_events()
+	performer_emails_and_dates = generate_insert_queries_performers()
 	generate_insert_queries_sponsors(sponsors)
-	generate_insert_queries_equipment()
+	eqIDs = generate_insert_queries_equipment()
 	generate_insert_queries_booth(sponsors)
 	generate_insert_queries_merchandise()
 	generate_insert_queries
+	return {
+		"visitor_tickets": visitors_and_tickets,
+		"performers_and_events": performer_emails_and_dates,
+		"equipment_ids": eqIDs,
+		"booths_and_merch": booths_and_merch
+	}

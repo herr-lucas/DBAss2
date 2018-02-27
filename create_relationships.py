@@ -1,22 +1,21 @@
 import random
 
-def generate_insert_queries_visits(visitors, eventdates):
+def generate_insert_queries_visits(visitors_and_events):
 	with open("insert_queries_visitors.sql") as f:
-		for (v, events) in visitors:
-			for e in events:
-				email = generate_email(v)
-				query = "INSERT INTO Visits (Visitor_email, EventDate) %s %s\n" % (email, e)
-				f.write(query)
+		for (email, event) in visitors_and_events:
+			email = generate_email(v)
+			query = "INSERT INTO Visits (Visitor_email, EventDate) %s %s\n" % (email, e)
+			f.write(query)
 
-def generate_insert_queries_performs(performers, eventdates):
+def generate_insert_queries_performs(performers_and_events):
 	with open("insert_queries_performers.sql") as f:
-		for (p, events) in performers:
-			for e in events:
+		for (performers, event_date) in performers_and_events:
+			for p in performers:
 				email = generate_email(p)
-				query = "INSERT INTO Performs (Performer_email, EventDate) %s %s\n" % (email, e)
+				query = "INSERT INTO Performs (Performer_email, EventDate) %s %s\n" % (email, eventdate)
 				f.write(query)
 
-def generate_insert_queries_work(staffids, eventdates):
+def generate_insert_queries_work(staffids):
 	workday = 1
 	with open("insert_queries_workers.sql") as f:
 		for memberId in staffids:
