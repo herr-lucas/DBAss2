@@ -76,7 +76,7 @@ def generate_insert_queries_events():
 		{"date": "January 6th", "name": "Bonobo"}, 
 		{"date": "January 7th", "name": "Petit Biscuit"}
 	]
-	with open("insert_queries_events", "w+") as f:
+	with open("insert_queries_events.sql", "w+") as f:
 		for e in events_and_dates:
 			date = e["date"]
 			name = e["name"]
@@ -148,7 +148,7 @@ def generate_insert_queries_performers():
 				genre = default_genre
 				pay = random.choice([500, 1000, 10000, 50000])
 				intro = "insert intro here"
-				query = "INSERT INTO Performer (Email, Name, Genre, Pay, Intro) %s %s %s %d %s" % (email, name, genre, pay, intro)
+				query = "INSERT INTO Performer (Email, Name, Genre, Pay, Intro) %s %s %s %d %s\n" % (email, name, genre, pay, intro)
 				f.write(query)
 			emails_and_dates.append((email, day))
 	return emails_and_dates
