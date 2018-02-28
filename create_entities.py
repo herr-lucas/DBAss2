@@ -10,7 +10,7 @@ def generate_email(name):
 	return name.replace(" ", "_") + "@gmail.com"
 
 def generate_credit_card_number():
-	return 10**18 + random.random() * (10**19 - 10**18) - 1
+	return 10**15 + random.random() * (10**16 - 10**15) - 1
 
 def generate_billing_address():
 	streets = ["Walkley", "Wolseley", "Gray Inn", "Peel", "Aylmer"]
@@ -23,15 +23,15 @@ def generate_insert_queries_visitors(names):
 			email = generate_email(name)
 			billing_adddress = generate_billing_address()
 			credit_card_number = generate_credit_card_number()
-			query = "INSERT INTO Visitor (name, email, billing_adddress, credit_card_number) %s %s %s %d\n" % (name, email, billing_adddress, credit_card_number)
+			query = "INSERT INTO Visitor (Name, Email, BillingAddress, CreditNO) VALUES (\'%s\', \'%s\', \'%s\', %d);\n" % (name, email, billing_adddress, credit_card_number)
 			f.write(query)
 
 def generate_insert_queries_tickets(visitors):
 	def generate_dates():
-		day = int(random.random()*30)
+		day = int(1 + random.random()*29)
 		month = random.choice(["December", "January"])
-		purchase_day = int(random.random()*day) if month == "January" else int(random.random()*30)
-		return {"event_day": "January %sth" % day, "purchase_day": month + " %sth" % purchase_day}
+		purchase_day = int(1+ random.random()*(day-1)) if month == "January" else int(1 + random.random()*29)
+		return {"event_day": "January %s, 2018" % day, "purchase_day": month + " %s, %s" % (purchase_day, 2017 if month == "December" else 2018)}
 
 	def generate_price(ticket_type):
 		return str(80 if ticket_type == "VIP" else 40)
@@ -39,20 +39,20 @@ def generate_insert_queries_tickets(visitors):
 	def sample_visitor_email(visitors):
 		return generate_email(random.choice(visitors))
 
-	ticket_types = ['VIP', 'Regular']
+	ticket_types = ['VIP', 'REG']
 	num_tickets = 500
 
 	visitors_and_tickets = []
 	with open("insert_queries_tickets.sql", "w+") as f:
 		for ticket_num in range(1, num_tickets):
 			ticket_type = random.choice(ticket_types)
-			dates = generateOptional(generate_dates)()
-			event_day = dates["event_day"] if dates != "NULL" else "NULL"
-			purchase_day = dates["purchase_day"] if dates != "NULL" else "NULL"
-			price = generateOptional(generate_price)(ticket_type)
-			visitor_email = generateOptional(sample_visitor_email)(visitors)
+			dates = generate_dates() #generateOptional(generate_dates)()
+			event_day = dates["event_day"]
+			purchase_day = dates["purchase_day"]
+			price = generate_price(ticket_type) #generateOptional(generate_price)(ticket_type)
+			visitor_email = sample_visitor_email(visitors) #generateOptional(sample_visitor_email)(visitors)
 			query = """INSERT INTO Ticket (TicketNO, Date_of_entry, Ticket_type, Date_of_purchase, Price, 
-				Visitor_email) %d %s %s %s %s %s\n""" % (
+				Visitor_email) VALUES(%d, \'%s\', \'%s\', \'%s\', \'%s\', \'%s\');\n""" % (
 				ticket_num, event_day, ticket_type, purchase_day, price, visitor_email
 			)
 			f.write(query)
@@ -67,20 +67,20 @@ def generate_insert_queries_staff(student_names):
 		for name in student_names[-num_staff:]:
 			email = generate_email(name)
 			role = random.choice(staff_roles)
-			query = "INSERT INTO Staff (Name, Email, Role) %s %s %s\n" % (name, email, role)
+			query = "INSERT INTO Staff (Name, Email, Role) VALUES (\'%s\', \'%s\', \'%s\');\n" % (name, email, role)
 			f.write(query)
 
 def generate_insert_queries_events():
 	events_and_dates = [	
-		{"date": "January 5th", "name": "Kaytranada"}, 
-		{"date": "January 6th", "name": "Bonobo"}, 
-		{"date": "January 7th", "name": "Petit Biscuit"}
+		{"date": "January 5, 2018", "name": "Kaytranada"}, 
+		{"date": "January 6, 2018", "name": "Bonobo"}, 
+		{"date": "January 7, 2018", "name": "Petit Biscuit"}
 	]
 	with open("insert_queries_events.sql", "w+") as f:
 		for e in events_and_dates:
 			date = e["date"]
 			name = e["name"]
-			query = "INSERT INTO Event (Date, Name) %s %s\n" % (date, name)
+			query = "INSERT INTO Event (Date, Name) VALUES(\'%s\', \'%s\');\n" % (date, name)
 			f.write(query)
 
 def generate_insert_queries_sponsors(sponsors):
@@ -91,15 +91,16 @@ def generate_insert_queries_sponsors(sponsors):
 	with open("insert_queries_sponsors.sql", "w+") as f:
 		for sponsor in sponsors:
 			email = generate_email(sponsor)
-			query = "INSERT INTO Sponsor (email, sponsor, generate_amount) %s %s %s\n" % (email, sponsor, generate_amount())
+			query = "INSERT INTO Sponsor (Email, Name, Sponsor_amout) VALUES(\'%s\', \'%s\', %d);\n" % (email, sponsor, generate_amount())
 			f.write(query)
 
-def generate_insert_queries_equipment():
+def generate_insert_queries_equipment(sponsors):
 	eqs = [('speakers', 10000, 2), ('screens', 20000, 3)]
 	equipment = []
 	with open("insert_queries_equipment.sql", "w+") as f:
 		for (name, price, qty) in eqs:
-			query = "INSERT INTO Equipment (name, price, quantity) %s %d %d\n" % (name, price, qty)
+			sponsor_email = generate_email(random.choice(sponsors))
+			query = "INSERT INTO Equipment (Type, Price, SponsorEmail, quantity) VALUES(\'%s\', %d, \'%s\', %d);\n" % (name, price, sponsor_email, qty)
 			f.write(query)
 			equipment.append(name)
 	return equipment
@@ -146,16 +147,17 @@ def generate_insert_queries_performers():
 			emails_and_dates.append((email, day))
 	return emails_and_dates
 
-def create_entity_queries(names, sponsors, merch):
-	visitor_names = names[len(names)/5:]
-	staff_names = names[:len(names)/5]
+def create_entity_queries(given_names, sponsors, merch):
+	uniq_names = list(set(given_names))
+	visitor_names = uniq_names[len(uniq_names)/5:]
+	staff_names = uniq_names[:len(uniq_names)/5]
 	generate_insert_queries_visitors(visitor_names)
 	visitors_and_tickets = generate_insert_queries_tickets(visitor_names)
 	generate_insert_queries_staff(staff_names)
 	generate_insert_queries_events()
 	performer_emails_and_dates = generate_insert_queries_performers()
 	generate_insert_queries_sponsors(sponsors)
-	equipment = generate_insert_queries_equipment()
+	equipment = generate_insert_queries_equipment(sponsors)
 	generate_insert_queries_booth(sponsors)
 	generate_insert_queries_merchandise(merch)
 	return {
