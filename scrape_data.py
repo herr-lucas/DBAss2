@@ -20,6 +20,13 @@ def getNames():
 
 names = getNames()
 sponsors = ['Videotron', 'Sapporo', 'Solotech', 'RBC', 'STM']
+merch = {
+	  "hats": ["red hat", "orange hat", "blue hat", "baseball cap"],
+	  "games": ["pinball", "cards", "snowball toss"],
+	  "heated area": ["souveniers"],
+	  "snacks": ["ham sandwich", "turkey sandwich", "crackers and cheese"],
+	  "drinks": ["voda", "rum", "jack daniels", "orange juice", "water"]
+	}
 
-entitydata = create_entity_queries(names, sponsors)
+entitydata = create_entity_queries(names, sponsors, merch)
 create_relationship_queries(entitydata)

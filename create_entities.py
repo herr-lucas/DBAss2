@@ -112,14 +112,7 @@ def generate_insert_queries_booth(sponsors):
 			query = "INSERT INTO Booth (Name, Location, Type) %s %s %s\n"  % (name, locations[i], typ)
 			f.write(query)
 
-def generate_insert_queries_merchandise():
-	merch = {
-	  "hats": ["red hat", "orange hat", "blue hat", "baseball cap"],
-	  "games": ["pinball", "cards", "snowball toss"],
-	  "heated area": ["souveniers"],
-	  "snacks": ["ham sandwich", "turkey sandwich", "crackers and cheese"],
-	  "drinks": ["voda", "rum", "jack daniels", "orange juice", "water"]
-	}
+def generate_insert_queries_merchandise(merch):
 	sponsor = "Videotron"
 	sponsor_email = generate_email(sponsor)
 	with open("insert_queries_merchandise.sql", "w+") as f:
@@ -153,7 +146,7 @@ def generate_insert_queries_performers():
 			emails_and_dates.append((email, day))
 	return emails_and_dates
 
-def create_entity_queries(names, sponsors):
+def create_entity_queries(names, sponsors, merch):
 	visitor_names = names[len(names)/5:]
 	staff_names = names[:len(names)/5]
 	generate_insert_queries_visitors(visitor_names)
@@ -162,12 +155,13 @@ def create_entity_queries(names, sponsors):
 	generate_insert_queries_events()
 	performer_emails_and_dates = generate_insert_queries_performers()
 	generate_insert_queries_sponsors(sponsors)
-	eqIDs = generate_insert_queries_equipment()
+	equipment = generate_insert_queries_equipment()
 	generate_insert_queries_booth(sponsors)
-	generate_insert_queries_merchandise()
+	generate_insert_queries_merchandise(merch)
 	return {
 		"visitor_tickets": visitors_and_tickets,
 		"performers_and_events": performer_emails_and_dates,
-		"equipment_ids": eqIDs#,
-		#"booths_and_merch": booths_and_merch
+		"staff_names": staff_names,
+		"booths_and_merch_names": merch,
+		"equipment_names": equipment
 	}

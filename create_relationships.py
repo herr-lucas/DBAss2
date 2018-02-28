@@ -13,32 +13,40 @@ def generate_insert_queries_performs(performers_and_events):
 				query = "INSERT INTO Performs (Performer_email, EventDate) %s %s\n" % (email, eventdate)
 				f.write(query)
 
-def generate_insert_queries_work(staffids):
+def generate_insert_queries_work(staffnames):
 	workday = 1
 	with open("insert_queries_work_relationship.sql", "w+") as f:
-		for memberId in staffids:
+		for name in staffnames:
+			idquery = "(SELECT id from STAFF WHERE name=%s)" % name
 			day = "January %dth" % workday
-			query = "INSERT INTO Work (StaffID, EventDate) %s %s\n" % (memberId, day)
+			query = "INSERT INTO Work (StaffID, EventDate) %s %s\n" % (idquery, day)
 			workday += 1
 			f.write(query)
 
-def generate_insert_queries_borrow(equipids, eventdate):
+def generate_insert_queries_borrow(equipnames):
 	with open("insert_queries_borrow_relationship.sql", "w+") as f:
-		for (eqId, date) in equipids:
+		for eqName in equipnames:
+			date = "January %dth" % random.choice([1,2,3])
+			idquery = "(SELECT id from Equipment WHERE name=%s)" % eqName
 			qty = 1
-			query = "INSERT INTO Borrow (EquipmentID, EventDate, Quantity) %s %s\n" % (eqId, date, qty)
+			query = "INSERT INTO Borrow (EquipmentID, EventDate, Quantity) %s %s %d\n" % (idquery, date, qty)
 			f.write(query)
 
-def generate_insert_queries_sells(booths, merchandise):
+def generate_insert_queries_sells(booths_and_merch_names):
 	with open("insert_queries_sells_relationship.sql", "w+") as f:
-		for (booth, merch) in booths:
-			qty = 12
-			query = "INSERT INTO Sells (Booth_name, MerchandiseID, quantity) %s %s\n" % (booth, merch, qty)
+		booths_and_merch_list = []
+		for k in booths_and_merch_names:
+			for v in booths_and_merch_names[k]:
+				booths_and_merch_list.append((k, v))
+		for (booth, merch) in booths_and_merch_list:
+			idquery = "(SELECT id from Merchandise WHERE name=%s)" % merch
+			qty = random.choice(range(1, 10))
+			query = "INSERT INTO Sells (Booth_name, MerchandiseID, quantity) %s %s %d\n" % (booth, idquery, qty)
 			f.write(query)
 
 def create_relationship_queries(entity_data):
 	generate_insert_queries_visits(entity_data["visitor_tickets"])
 	generate_insert_queries_performs(entity_data["performers_and_events"])
-	#generate_insert_queries_work()
-	#generate_insert_queries_borrow()
-	#generate_insert_queries_sells()
+	generate_insert_queries_work(entity_data["staff_names"])
+	generate_insert_queries_borrow(entity_data["equipment_names"])
+	generate_insert_queries_sells(entity_data["booths_and_merch_names"])
