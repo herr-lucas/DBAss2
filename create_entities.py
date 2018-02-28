@@ -42,7 +42,7 @@ def generate_insert_queries_tickets(visitors):
 	ticket_types = ['VIP', 'REG']
 	num_tickets = 500
 
-	visitors_and_tickets = []
+	visitors_and_dates = []
 	with open("insert_queries_tickets.sql", "w+") as f:
 		for ticket_num in range(1, num_tickets):
 			ticket_type = random.choice(ticket_types)
@@ -56,9 +56,9 @@ def generate_insert_queries_tickets(visitors):
 				ticket_num, event_day, ticket_type, purchase_day, price, visitor_email
 			)
 			f.write(query)
-			visitors_and_tickets.append({"email": visitor_email, "date": event_day})
+			visitors_and_dates.append({"email": visitor_email, "date": event_day})
 
-	return visitors_and_tickets
+	return visitors_and_dates
 
 def generate_insert_queries_staff(student_names):
 	num_staff = 50
@@ -72,10 +72,18 @@ def generate_insert_queries_staff(student_names):
 
 def generate_insert_queries_events():
 	events_and_dates = [	
+		{"date": "January 1, 2018", "name": "Flow"}, 
+		{"date": "January 2, 2018", "name": "Bob Moses"}, 
+		{"date": "January 3, 2018", "name": "Igloo"}, 
+		{"date": "January 4, 2018", "name": "Rain"}, 
+		{"date": "January 5, 2018", "name": "Tyco"}, 
 		{"date": "January 5, 2018", "name": "Kaytranada"}, 
 		{"date": "January 6, 2018", "name": "Bonobo"}, 
-		{"date": "January 7, 2018", "name": "Petit Biscuit"}
+		{"date": "January 7, 2018", "name": "Petit Biscuit"},
 	]
+	for i in range(8, 30):
+		events_and_dates.append({"date": "January %d, 2018" % i, "name": "TBD"})
+
 	with open("insert_queries_events.sql", "w+") as f:
 		for e in events_and_dates:
 			date = e["date"]
@@ -110,7 +118,7 @@ def generate_insert_queries_booth(sponsors):
 	locations = [a + str(b) + str(c) for a in ['A', 'B', 'C'] for b in range(1,4) for c in range(1, 4)]
 	with open("insert_queries_booths.sql", "w+") as f:
 		for (i, (name, typ)) in map(lambda x: (types.index(x), x), types):
-			query = "INSERT INTO Booth (Name, Location, Type) %s %s %s\n"  % (name, locations[i], typ)
+			query = "INSERT INTO Booth (Name, Location, Type) VALUES(\'%s\', \'%s\', \'%s\');\n"  % (name, locations[i], typ)
 			f.write(query)
 
 def generate_insert_queries_merchandise(merch):
@@ -121,30 +129,29 @@ def generate_insert_queries_merchandise(merch):
 			for name in merchitems:
 				stock = random.choice([10, 50]) 
 				price = random.choice([3, 5, 10, 20, 30])	
-				query = "INSERT INTO Merchandise (Name, Stock, Price_per_unit, sponsor_email) %s %d %s% s\n" % (name, stock, price, sponsor_email)
+				query = "INSERT INTO Merchandise (Name, Stock, Price_per_unit, sponsor_email) VALUES(\'%s\', \'%d\', \'%s\', \'%s\');\n" % (name, stock, price, sponsor_email)
 				f.write(query)
 
 def generate_insert_queries_performers():
 	performances = [
-		{"day": "January 1st", "performers": ["Hack", "Slack", "Kaytranada"]}, 
-		{"day": "January 2nd", "performers": ["Slice", "Dice", "Bonobo"]}, 
-		{"day": "January 3rd", "performers": ["Mash", "Petit Biscuit"]}
+		{"day": "January 5, 2018", "performers": ["Kaytranada"]}, #["Hack", "Slack", "Kaytranada"]}, 
+		{"day": "January 6, 2018", "performers": ["Bonobo"]}, #["Slice", "Dice", "Bonobo"]}, 
+		{"day": "January 7, 2018", "performers": ["Petit Biscuit"]}   #["Mash", "Petit Biscuit"]}
 	]
 	default_genre = "Electronic"
 	emails_and_dates = []
 	with open("insert_queries_performers.sql", "w+") as f:
 		for p in performances:
 			day = p["day"]
-			performers = p["performers"]
-			for performer in performers:
+			for performer in p["performers"]:
 				email = generate_email(performer)
 				name = performer
 				genre = default_genre
 				pay = random.choice([500, 1000, 10000, 50000])
-				intro = "insert intro here"
-				query = "INSERT INTO Performer (Email, Name, Genre, Pay, Intro) %s %s %s %d %s\n" % (email, name, genre, pay, intro)
+				intro = "insert intro here";
+				query = "INSERT INTO Performer (Email, Name, Genre, Pay, Intro) VALUES(\'%s\', \'%s\', \'%s\', %d, \'%s\');\n" % (email, name, genre, pay, intro)
 				f.write(query)
-			emails_and_dates.append((email, day))
+				emails_and_dates.append((email, day))
 	return emails_and_dates
 
 def create_entity_queries(given_names, sponsors, merch):
@@ -152,7 +159,7 @@ def create_entity_queries(given_names, sponsors, merch):
 	visitor_names = uniq_names[len(uniq_names)/5:]
 	staff_names = uniq_names[:len(uniq_names)/5]
 	generate_insert_queries_visitors(visitor_names)
-	visitors_and_tickets = generate_insert_queries_tickets(visitor_names)
+	visitors_and_events = generate_insert_queries_tickets(visitor_names)
 	generate_insert_queries_staff(staff_names)
 	generate_insert_queries_events()
 	performer_emails_and_dates = generate_insert_queries_performers()
@@ -161,7 +168,7 @@ def create_entity_queries(given_names, sponsors, merch):
 	generate_insert_queries_booth(sponsors)
 	generate_insert_queries_merchandise(merch)
 	return {
-		"visitor_tickets": visitors_and_tickets,
+		"visitor_tickets": visitors_and_events,
 		"performers_and_events": performer_emails_and_dates,
 		"staff_names": staff_names,
 		"booths_and_merch_names": merch,
