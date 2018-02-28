@@ -1,0 +1,16 @@
+python scrape_data.py
+
+insert_queries_booths.sql
+insert_queries_borrow_relationship.sql
+insert_queries_equipment.sql
+insert_queries_events.sql
+insert_queries_merchandise.sql
+insert_queries_performer_relationship.sql
+insert_queries_performers.sql
+insert_queries_sells_relationship.sql
+insert_queries_sponsors.sql
+insert_queries_staff.sql
+insert_queries_tickets.sql
+insert_queries_visitor_relationship.sql
+insert_queries_visitors.sql
+insert_queries_work_relationship.sql
